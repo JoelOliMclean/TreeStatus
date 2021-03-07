@@ -2,11 +2,12 @@
 using BepInEx.Configuration;
 using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TreeStatus
 {
-    [BepInPlugin("uk.co.oliapps.valheim.treestatus", "Tree Status", "0.0.2")]
+    [BepInPlugin("uk.co.oliapps.valheim.treestatus", "Tree Status", "0.0.3")]
     public class TreeStatus : BaseUnityPlugin
     {
         public enum DisplayType { HealthBar, Percentage, Disabled }
@@ -19,17 +20,25 @@ namespace TreeStatus
             Harmony.CreateAndPatchAll(typeof(TreeStatus), null);
         }
 
+
         [HarmonyPatch(typeof(TreeBase), "RPC_Damage")]
-        [HarmonyPostfix]
-        public static void TreeBase_RPC_Damage(ref TreeBase __instance, long sender, HitData hit)
+        [HarmonyPrefix]
+        public static bool TreeBase_Prefix_RPC_Damage(ref TreeBase __instance, long sender, HitData hit)
         {
             if (!displayType.Value.Equals(DisplayType.Disabled))
             {
-                var m_nview = (ZNetView)AccessTools.Field(typeof(TreeBase), "m_nview").GetValue(__instance);
-                float remainingHealth = m_nview.GetZDO().GetFloat("health", __instance.m_health);
-                float remainingPercentage = remainingHealth / __instance.m_health * 100;
-                Chat.instance.SetNpcText(__instance.gameObject, Vector3.up, 0, 5.0f, "", GetPercentageString(remainingPercentage), false);
+                if (__instance)
+                {
+                    var m_nview = (ZNetView)AccessTools.Field(typeof(TreeBase), "m_nview").GetValue(__instance);
+                    if (m_nview)
+                    {
+                        float remainingHealth = m_nview.GetZDO().GetFloat("health", __instance.m_health);
+                        float remainingPercentage = remainingHealth / __instance.m_health * 100;
+                        Chat.instance.SetNpcText(__instance.gameObject, Vector3.up, 0, 5.0f, "", GetPercentageString(remainingPercentage), false);
+                    }
+                }
             }
+            return true;
         }
 
         private static string GetPercentageString(float percentage)
@@ -37,9 +46,9 @@ namespace TreeStatus
             switch (displayType.Value)
             {
                 case DisplayType.HealthBar:
-                    float percentageBase2 = percentage / 10;
+                    float percentageBase2 = percentage / 10f;
                     string progress = "";
-                    for (int i = 1; i <= 10; i++)
+                    for (int i = 0; i < 10; i++)
                     {
                         if (i <= percentageBase2)
                         {
