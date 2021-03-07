@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace TreeStatus
 {
-    [BepInPlugin("uk.co.oliapps.valheim.treestatus", "Tree Status", "0.0.1")]
+    [BepInPlugin("uk.co.oliapps.valheim.treestatus", "Tree Status", "0.0.2")]
     public class TreeStatus : BaseUnityPlugin
     {
         public enum DisplayType { HealthBar, Percentage, Disabled }
