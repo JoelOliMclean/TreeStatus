@@ -266,8 +266,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisplayType.cs" />
+    <Compile Include="PatchDestructible.cs" />
+    <Compile Include="PatchTreeBase.cs" />
+    <Compile Include="PatchTreeLog.cs" />
     <Compile Include="TreeStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TreeStatusConfig.cs" />
+    <Compile Include="TreeStatusUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
